@@ -3,13 +3,11 @@
 // 2022-02-10 v2 リリース
 // 2022-02-20 v2.1.0 リリース
 
-require('dotenv').config();
-
 // ========================================================
 // 環境設定
 // ========================================================
 
-const token = process.env.TOKEN; // DiscordのBotのトークン
+const token = "OTI1Mzc2MTQ5OTg5NzY1MjAw.YcsNsg.E0KQID86FIIBAFUTGhn_7M7etqw"; // DiscordのBotのトークン
 const botname = "こうかとん22"; // Botの名前
 const ver = "v2.1.0"; // 現在バージョン
 
