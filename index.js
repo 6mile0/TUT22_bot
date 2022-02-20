@@ -7,7 +7,7 @@
 // 環境設定
 // ========================================================
 
-const token = "OTI1Mzc2MTQ5OTg5NzY1MjAw.YcsNsg.E0KQID86FIIBAFUTGhn_7M7etqw"; // DiscordのBotのトークン
+const token = "YOUR_TOKEN"; // DiscordのBotのトークン
 const botname = "こうかとん22"; // Botの名前
 const ver = "v2.1.0"; // 現在バージョン
 
