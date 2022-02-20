@@ -1,13 +1,17 @@
 // こうかとん22
 // 2022-01-02 作成
-// 2022-02-20 v2作成
+// 2022-02-10 v2 リリース
+// 2022-02-20 v2.1.0 リリース
+
+require('dotenv').config();
 
 // ========================================================
 // 環境設定
 // ========================================================
 
-const token = ""; // DiscordのBotのトークン
-const botname = "こうかとん22 v2"; // Botの名前
+const token = process.env.TOKEN; // DiscordのBotのトークン
+const botname = "こうかとん22"; // Botの名前
+const ver = "v2.1.0"; // 現在バージョン
 
 // ========================================================
 
@@ -42,7 +46,7 @@ const client = new Client({
 
 client.once("ready", () => {
   console.log("準備完了");
-  client.user.setPresence({ activities: [{ name: "!をつけて声かけてね" }] });
+  client.user.setPresence({ activities: [{ name: "Ver:" + ver }] });
 });
 
 client.on("guildMemberAdd", (member) => {
@@ -50,8 +54,10 @@ client.on("guildMemberAdd", (member) => {
     // 一般CHへのメッセージ送信機構
     client.channels.cache.get(systemCH).send(content);
   }
-  sys_message_Send(`<@${member.id}>`);
-  const grach = new MessageEmbed()
+
+  member.roles.add(no_Authed); // 新規加入ユーザーに未認証ロールを付与
+  sys_message_Send(`<@${member.id}>`); // 新規ユーザーにメンション
+  const grach = new MessageEmbed() // 定形自己紹介案内送信
     .setTitle(member.displayName + "さん，TUT22へようこそ！")
     .setColor("#ff8c00")
     .setDescription(
