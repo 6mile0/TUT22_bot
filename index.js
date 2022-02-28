@@ -10,7 +10,7 @@ const { setTimeout } = require('timers/promises');
 // 環境設定
 // ========================================================
 
-const token = "YOUR_TOKEN"; // DiscordのBotのトークン
+const token = "YOUR_TOKEN"; // DiscordのBotのトークン(本番環境)
 const botname = "こうかとん22"; // Botの名前
 const ver = "v2.2.0"; // 現在バージョン
 
@@ -22,7 +22,6 @@ const ver = "v2.2.0"; // 現在バージョン
 
 const systemCH = "941327431132934154"; // 参加通知を送るチャンネル
 const introCH = "923600953553346660"; // 自己紹介CHのID
-
 const BS = "925365257055141889"; // 応用生物学部
 const CS = "925364635106967582"; // コンピュータサイエンス学部
 const MS = "925365138838671430"; // メディア学部
@@ -36,13 +35,7 @@ const no_Authed = "943149918493769771"; // 未認証
 const { Client, Intents, MessageEmbed } = require("discord.js");
 
 const client = new Client({
-  intents: [
-    "GUILD_MEMBERS",
-    Intents.FLAGS.GUILDS,
-    Intents.FLAGS.GUILD_MESSAGES,
-    Intents.FLAGS.GUILD_MEMBERS,
-    Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
-  ],
+  intents: Object.values(Intents.FLAGS),
 });
 
 client.once("ready", () => {
@@ -157,25 +150,54 @@ client.on("messageCreate", async (msg) => {
     await setTimeout(5000);
     message.delete();
   }
+  if (msg.content.match(/^(?=.*消えろ).*$/)) {
+    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+    msg.delete();
+    await setTimeout(5000);
+    message.delete();
+  }
+  if (msg.content.match(/^(?=.*デブ).*$/)) {
+    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+    msg.delete();
+    await setTimeout(5000);
+    message.delete();
+  }
+  if (msg.content.match(/^(?=.*クソ).*$/)) {
+    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+    msg.delete();
+    await setTimeout(5000);
+    message.delete();
+  }
+  if (msg.content.match(/^(?=.*カス).*$/)) {
+    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+    msg.delete();
+    await setTimeout(5000);
+    message.delete();
+  }
+  if (msg.content.match(/^(?=.*ブサイク).*$/)) {
+    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+    msg.delete();
+    await setTimeout(5000);
+    message.delete();
+  }
 
   if (msg.content.match(/^(?=.*おやすみ).*$/)) {
     msg.react('👋')
   }
 
-  if (msg.content.substring(0, 1) == "!") {
-    // !で始まるメッセージを受け取る
-    if (msg.content.substring(1, 4) === "へるぷ") {
-      msg.channel.send("ヘルプを表示します。");
-      msg.channel.send(
-        "```" +
-        "◆はじめに \n まずこのサーバーへ参加した方々には自己紹介をお願いしております。\n 自己紹介後各部ごとのロール（名前の色(学部カラーに由来)）が付与されます。\n 円滑なサーバー運営のため，ご協力よろしくお願いします。" +
-        "```"
-      );
-      msg.channel.send(
-        "```" +
-        "◆機能一覧 \n＊「!へるぷ」 -> 機能一覧（このヘルプ）を表示します。" +
-        "```"
-      );
+  if (msg.content.substring(0, 1) == "!") { // 例：「こうかとん 〇〇」
+    // 「こうかとん」で始まるメッセージを受け取る
+    if (msg.content.substring(1, 6) === "キックする") {
+      var person = 3;
+      var mention = msg.mentions.members.first();
+      msg.channel.send(mention.user.tag + "さんをVCからキック(強制退出)させようとしています");
+      msg.channel.send("この操作を実行するには提案者のメッセージに" + person + "人の👌リアクションが必要です。");
+      msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: person })
+        .then(collected => {
+          if (!mention.voice.channel) return message.channel.send('指定したメンバーがボイスチャンネルに参加していません')
+          mention.voice.setChannel(null);
+          msg.channel.send(`${mention.user.tag}さんをキックしました`)
+        });
     }
   }
 
