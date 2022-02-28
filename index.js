@@ -12,7 +12,7 @@ const { setTimeout } = require('timers/promises');
 
 const token = "YOUR_TOKEN"; // DiscordのBotのトークン(本番環境)
 const botname = "こうかとん22"; // Botの名前
-const ver = "v2.2.0"; // 現在バージョン
+const ver = "v2.3.0"; // 現在バージョン
 
 // ========================================================
 
