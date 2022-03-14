@@ -12,7 +12,7 @@ const { setTimeout } = require('timers/promises');
 
 const token = "YOUR_TOKEN"; // DiscordのBotのトークン(本番環境)
 const botname = "こうかとん22"; // Botの名前
-const ver = "v2.3.0"; // 現在バージョン
+const ver = "v2.3.1"; // 現在バージョン
 
 // ========================================================
 
@@ -194,9 +194,15 @@ client.on("messageCreate", async (msg) => {
       msg.channel.send("この操作を実行するには提案者のメッセージに" + person + "人の👌リアクションが必要です。");
       msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: person })
         .then(collected => {
-          if (!mention.voice.channel) return message.channel.send('指定したメンバーがボイスチャンネルに参加していません')
-          mention.voice.setChannel(null);
-          msg.channel.send(`${mention.user.tag}さんをキックしました`)
+          if (collected.size == 1) { // リアクションした場合
+            if (collected.get('👌').count == person) {
+              if (!mention.voice.channel) return msg.channel.send('[エラー] 指定したメンバーがボイスチャンネルに参加していません');
+              mention.voice.setChannel(null);
+              msg.channel.send("[成功] " + `${mention.user.tag}さんをキックしました`)
+            }
+          } else { // リアクションしてない場合
+            msg.channel.send('[エラー] 規定の人数のリアクションが得ることができなかったか、メッセージが削除されました')
+          }
         });
     }
   }
