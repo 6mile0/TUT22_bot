@@ -1,10 +1,10 @@
 // こうかとん22
-// 2022-01-02 作成
-// 2022-02-10 v2 リリース
-// 2022-02-20 v2.1.0 リリース
-// 2022-02-21 v2.2.0 リリース
+// バージョンはGitHubのコミットを参照
+
+// <注意> NGワードファイル(words.txt)はGitHubに上げないこと！(コミット前確認)
 
 const { setTimeout } = require('timers/promises');
+const fs = require('fs');
 
 // ========================================================
 // 環境設定
@@ -12,7 +12,7 @@ const { setTimeout } = require('timers/promises');
 
 const token = "YOUR_TOKEN"; // DiscordのBotのトークン(本番環境)
 const botname = "こうかとん22"; // Botの名前
-const ver = "v2.3.1"; // 現在バージョン
+const ver = "v2.4.0"; // 現在バージョン
 
 // ========================================================
 
@@ -37,6 +37,14 @@ const { Client, Intents, MessageEmbed } = require("discord.js");
 const client = new Client({
   intents: Object.values(Intents.FLAGS),
 });
+
+console.log("こうかとん22 " + ver + " を起動します");
+console.log("NGワードリストの読み込み中...");
+
+var lists = fs.readFileSync("./words.txt", 'utf8'); // NGワードリストの読み込み(ローカル内のみ)
+var NGWords = lists.split("\n"); // NGワードリストを配列に格納
+
+console.log("全" + NGWords.length + "個のNGワードを読み込みました");
 
 client.once("ready", () => {
   console.log("準備完了");
@@ -138,44 +146,8 @@ client.on("messageCreate", async (msg) => {
     return;
   }
 
-  if (msg.content.match(/^(?=.*死ね).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*ウザい).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*消えろ).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*デブ).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*クソ).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*カス).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
-    msg.delete();
-    await setTimeout(5000);
-    message.delete();
-  }
-  if (msg.content.match(/^(?=.*ブサイク).*$/)) {
-    const message = await msg.channel.send("暴言が検出されました。削除します。(このメッセージも5秒後削除されます。)");
+  if (msg.content.match(new RegExp('^(?=.*' + NGWords[NGWords.indexOf(msg.content)] + ').*$'))) {
+    const message = await msg.channel.send("NGワードが検出されました。削除します。(このメッセージも5秒後削除されます。)");
     msg.delete();
     await setTimeout(5000);
     message.delete();
@@ -185,25 +157,33 @@ client.on("messageCreate", async (msg) => {
     msg.react('👋')
   }
 
+  if (msg.content.match(/^(?=.*ありがとう).*$/)) {
+    msg.react('🧡')
+  }
+
   if (msg.content.substring(0, 1) == "!") { // 例：「こうかとん 〇〇」
     // 「こうかとん」で始まるメッセージを受け取る
     if (msg.content.substring(1, 6) === "キックする") {
       var person = 3;
       var mention = msg.mentions.members.first();
-      msg.channel.send(mention.user.tag + "さんをVCからキック(強制退出)させようとしています");
-      msg.channel.send("この操作を実行するには提案者のメッセージに" + person + "人の👌リアクションが必要です。");
-      msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: person })
-        .then(collected => {
-          if (collected.size == 1) { // リアクションした場合
-            if (collected.get('👌').count == person) {
-              if (!mention.voice.channel) return msg.channel.send('[エラー] 指定したメンバーがボイスチャンネルに参加していません');
-              mention.voice.setChannel(null);
-              msg.channel.send("[成功] " + `${mention.user.tag}さんをキックしました`)
+      if (!typeof mention === "undefined") { // メンションがunderfinedでない場合
+        msg.channel.send(mention.user.tag + "さんをVCからキック(強制退出)させようとしています");
+        msg.channel.send("この操作を実行するには提案者のメッセージに" + person + "人の👌リアクションが必要です。");
+        msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: person })
+          .then(collected => {
+            if (collected.size == 1) { // リアクションした場合
+              if (collected.get('👌').count == person) { // 👌のメンション数をチェック
+                if (!mention.voice.channel) return msg.channel.send('[エラー] 指定したメンバーがボイスチャンネルに参加していません');
+                mention.voice.setChannel(null); // 参加しているVCチャンネルを存在しないものに変更
+                msg.channel.send("[成功] " + `${mention.user.tag}さんをVCからキックしました👍`)
+              }
+            } else { // リアクションしてない場合
+              msg.channel.send('[エラー] 規定の人数のリアクションを得ることができなかったか、発案者のメッセージが削除されました')
             }
-          } else { // リアクションしてない場合
-            msg.channel.send('[エラー] 規定の人数のリアクションが得ることができなかったか、メッセージが削除されました')
-          }
-        });
+          });
+      } else { // メンションがunderfinedの場合
+        msg.channel.send('[エラー] キック対象ユーザーを正常に取得できませんでした' + '\n もしかして: ユーザー指定部分がメンション形式になっていない');
+      }
     }
   }
 
