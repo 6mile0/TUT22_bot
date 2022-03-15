@@ -163,7 +163,7 @@ client.on("messageCreate", async (msg) => {
   if (msg.content.substring(0, 1) == "!") { // 例：「こうかとん 〇〇」
     // 「こうかとん」で始まるメッセージを受け取る
     if (msg.content.substring(1, 6) === "キックする") {
-      var num = 1; // メンション数指定
+      var num = 3; // メンション数指定
       var mention = msg.mentions.members.first();
       console.log(typeof mention);
       if (typeof mention === "object") { // メンションがObjectの場合(つまりGuildMemberが取得できている)
