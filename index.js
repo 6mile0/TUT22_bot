@@ -141,12 +141,11 @@ client.on("messageCreate", async (msg) => {
     client.channels.cache.get(systemCH).send(content);
   }
 
-  if (msg.author.bot) {
-    // bot同士の会話回避
+  if (msg.author.bot) { // bot同士の会話回避
     return;
   }
 
-  if (msg.content.match(new RegExp('^(?=.*' + NGWords[NGWords.indexOf(msg.content)] + ').*$'))) {
+  if (msg.content.match(new RegExp('^(?=.*' + NGWords[NGWords.indexOf(msg.content)] + ').*$'))) { // NGワードチェック (NGWords.indexOf(msg.content)がNGワードのインデックス)
     const message = await msg.channel.send("NGワードが検出されました。削除します。(このメッセージも5秒後削除されます。)");
     msg.delete();
     await setTimeout(5000);
@@ -164,24 +163,25 @@ client.on("messageCreate", async (msg) => {
   if (msg.content.substring(0, 1) == "!") { // 例：「こうかとん 〇〇」
     // 「こうかとん」で始まるメッセージを受け取る
     if (msg.content.substring(1, 6) === "キックする") {
-      var person = 3;
+      var num = 1; // メンション数指定
       var mention = msg.mentions.members.first();
-      if (!typeof mention === "undefined") { // メンションがunderfinedでない場合
+      console.log(typeof mention);
+      if (typeof mention === "object") { // メンションがObjectの場合(つまりGuildMemberが取得できている)
         msg.channel.send(mention.user.tag + "さんをVCからキック(強制退出)させようとしています");
-        msg.channel.send("この操作を実行するには提案者のメッセージに" + person + "人の👌リアクションが必要です。");
-        msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: person })
+        msg.channel.send("▶この操作を実行するには提案者のメッセージに" + num + "人の👌リアクションが必要です");
+        msg.awaitReactions({ filter: reaction => reaction.emoji.name === '👌', max: num })
           .then(collected => {
             if (collected.size == 1) { // リアクションした場合
-              if (collected.get('👌').count == person) { // 👌のメンション数をチェック
-                if (!mention.voice.channel) return msg.channel.send('[エラー] 指定したメンバーがボイスチャンネルに参加していません');
+              if (collected.get('👌').count == num) { // 👌のメンション数をチェック
+                if (!mention.voice.channel) return msg.channel.send('[エラー] キック対象ユーザーがボイスチャンネルに参加していません');
                 mention.voice.setChannel(null); // 参加しているVCチャンネルを存在しないものに変更
-                msg.channel.send("[成功] " + `${mention.user.tag}さんをVCからキックしました👍`)
+                msg.channel.send("[成功] " + `${mention.user.tag}さんをVCから正常にキックしました`)
               }
-            } else { // リアクションしてない場合
+            } else { // リアクションしなかった場合
               msg.channel.send('[エラー] 規定の人数のリアクションを得ることができなかったか、発案者のメッセージが削除されました')
             }
           });
-      } else { // メンションがunderfinedの場合
+      } else { // メンションがObjectでない場合(つまりGuildMemberが取得できていない)
         msg.channel.send('[エラー] キック対象ユーザーを正常に取得できませんでした' + '\n もしかして: ユーザー指定部分がメンション形式になっていない');
       }
     }
@@ -214,7 +214,7 @@ client.on("messageCreate", async (msg) => {
       var role = HS;
     }
 
-    if (role === undefined) {
+    if (typeof role === "undefined") {
       return;
     } else {
       if (msg.member.roles.cache.some(r => r == no_Authed)) { // 未認証ロール存在確認
