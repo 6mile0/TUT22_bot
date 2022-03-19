@@ -12,7 +12,7 @@ const fs = require('fs');
 
 const token = "YOUR_TOKEN"; // DiscordのBotのトークン(本番環境)
 const botname = "こうかとん22"; // Botの名前
-const ver = "v2.4.0"; // 現在バージョン
+const ver = "v2.4.1"; // 現在バージョン
 
 // ========================================================
 
